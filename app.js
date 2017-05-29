@@ -13,9 +13,12 @@ bookRouter.route('/Books')
   .get(function(req, res) {
     // var responseJson = { hello: 'This is my api' };
     // res.json(responseJson);
-    Book.find(function(err, books) {
+    var query = req.query;
+
+    Book.find(query, function(err, books) {
       if (err)
-        console.log(err)
+      // console.log(err)
+        res.status(500).send(err);
       else
         res.json(books);
     });
