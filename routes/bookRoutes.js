@@ -3,31 +3,12 @@ var express = require('express');
 var routes = function(Book) {
 
   var bookRouter = express.Router();
+
+  var bookController = require('../controllers/booKController.js')(Book);
   //Route Books//
   bookRouter.route('/')
-    .post(function(req, res) {
-      var book = new Book(req.body);
-      console.log(book);
-      book.save();
-      res.status(201).send(book);
-    })
-    .get(function(req, res) {
-      // var responseJson = { hello: 'This is my api' };
-      // res.json(responseJson);
-      //fazendo o filtro com genero
-      var query = req.query;
-      var query = {};
-      if (req.query.genre) {
-        query.genre = req.query.genre;
-      }
-      Book.find(query, function(err, books) {
-        if (err)
-        // console.log(err)
-          res.status(500).send(err);
-        else
-          res.json(books);
-      });
-    });
+    .post(bookController.post)
+    .get(bookController.get);
   //implementar o middleware para o get e put do livro
   bookRouter.use('/:bookId', function(req, res, next) {
     //essa função vai ser proximo para todos os metodos desta rota.
@@ -59,6 +40,31 @@ var routes = function(Book) {
       req.book.read = req.body.read;
       req.book.save();
       res.json(req.book);
+    })
+    .patch(function(req, res) {
+      if (req.body._id)
+        delete req.body._id;
+
+      for (var p in req.body) {
+        req.book[p] = req.body[p];
+      }
+
+      req.book.save(function(err) {
+        if (err)
+          res.status(500).send(err);
+        else {
+          res.json(req.book);
+        }
+      });
+    })
+    .delete(function(req, res) {
+      req.book.remove(function(err) {
+        if (err)
+          res.status(500).send(err);
+        else {
+          res.status(204).send('Removed');
+        }
+      });
     });
 
   return bookRouter;
