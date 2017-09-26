@@ -19,8 +19,11 @@ describe('Book Controller Tests:', function() {
         status: sinon.spy(),
         send: sinon.spy()
       }
+      var bookController = require('../controllers/bookController')(Book);
+      bookController.post(req, res);
 
       res.status.callledWith(400).should.equal(true, 'Bad Status' + res.status.args[0][0]);
+      res.send.calledWith('Title is required').should.equal(true);
     });
   });
 });

@@ -4,8 +4,10 @@ var bookController = function(Book) {
   var post = function(req, res) {
       var book = new Book(req.body);
       console.log(book);
+
       book.save();
-      res.status(201).send(book);
+      res.status(201);
+      res.send(book);
     }
     //verbo Get
   var get = function(req, res) {
